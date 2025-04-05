@@ -29,7 +29,6 @@ public class TimerController {
     public void stopTimer() {
         timer.stop();
     }
-    
     public int getSeconds() {
         return seconds;
     }

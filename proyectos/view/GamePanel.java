@@ -25,7 +25,6 @@ public class GamePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
         if (pieces != null) {
             for (PuzzlePiece piece : pieces) {
                 if (!piece.isEmpty()) {
@@ -49,7 +48,6 @@ public class GamePanel extends JPanel {
     public int getPieceWidth() {
         return pieceWidth;
     }
-    
     public int getPieceHeight() {
         return pieceHeight;
     }

@@ -21,16 +21,13 @@ public class ImageLoader {
             (double) targetWidth / original.getWidth(),
             (double) targetHeight / original.getHeight()
         );
-        
         int newWidth = (int) (original.getWidth() * ratio);
         int newHeight = (int) (original.getHeight() * ratio);
-        
         BufferedImage scaledImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = scaledImage.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         g.drawImage(original, 0, 0, newWidth, newHeight, null);
         g.dispose();
-        
         return scaledImage;
     }
 }

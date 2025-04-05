@@ -24,14 +24,12 @@ public class GameController {
         this.gamePanel = gamePanel;
         this.imageLoader = imageLoader;
         this.timerController = timerController;
-        
         setupListeners();
     }
     
     private void setupListeners() {
         menuPanel.addLoadImageListener(e -> loadImage());
         menuPanel.addStartGameListener(e -> startGame());
-        
         gamePanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -47,7 +45,6 @@ public class GameController {
             String imagePath = menuPanel.getSelectedImage();
             BufferedImage image = imageLoader.loadImage(imagePath);
             BufferedImage scaledImage = imageLoader.scaleImage(image, 800, 800);
-            
             gameState.setSelectedImage(imagePath);
             JOptionPane.showMessageDialog(null, "Imagen cargada correctamente", 
                                          "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -63,7 +60,6 @@ public class GameController {
                                          "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
         gameState.setDifficulty(menuPanel.getSelectedDifficulty());
         preparePuzzle();
         showSolvedPuzzle();
@@ -73,34 +69,27 @@ public class GameController {
         try {
             BufferedImage image = imageLoader.loadImage(gameState.getSelectedImage());
             BufferedImage scaledImage = imageLoader.scaleImage(image, 800, 800);
-            
             int gridSize = gameState.getDifficulty().getSize();
             int pieceWidth = scaledImage.getWidth() / gridSize;
             int pieceHeight = scaledImage.getHeight() / gridSize;
-            
             List<PuzzlePiece> pieces = new ArrayList<>();
             List<PuzzlePiece> solvedPieces = new ArrayList<>();
-            
             for (int y = 0; y < gridSize; y++) {
                 for (int x = 0; x < gridSize; x++) {
                     BufferedImage subImage = scaledImage.getSubimage(
                         x * pieceWidth, y * pieceHeight, pieceWidth, pieceHeight);
-                    
                     PuzzlePiece piece = new PuzzlePiece(
                         subImage, x + y * gridSize, x * pieceWidth, y * pieceHeight);
-                    
                     pieces.add(piece);
                     solvedPieces.add(piece);
                 }
             }
             
-            // La última pieza es el espacio vacío
+            // Ultima pieza
             PuzzlePiece emptyPiece = pieces.get(pieces.size() - 1);
             emptyPiece.setEmpty(true);
-            
             gameState.setPieces(pieces);
             gameState.setSolvedPieces(solvedPieces);
-            
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Error al preparar el puzzle: " + ex.getMessage(), 
                                          "Error", JOptionPane.ERROR_MESSAGE);
@@ -109,7 +98,6 @@ public class GameController {
     
     private void showSolvedPuzzle() {
         gamePanel.setPieces(gameState.getPieces(), gameState.getDifficulty().getSize());
-        
         Timer timer = new Timer(2000, e -> {
             scramblePuzzle();
             gameState.setGameStarted(true);
@@ -122,17 +110,14 @@ public class GameController {
     private void scramblePuzzle() {
         List<PuzzlePiece> pieces = gameState.getPieces();
         int gridSize = gameState.getDifficulty().getSize();
-        
         for (int i = 0; i < 1000; i++) {
             PuzzlePiece emptyPiece = findEmptyPiece(pieces);
             List<PuzzlePiece> adjacentPieces = getAdjacentPieces(pieces, emptyPiece, gridSize);
-            
             if (!adjacentPieces.isEmpty()) {
                 PuzzlePiece randomPiece = adjacentPieces.get((int)(Math.random() * adjacentPieces.size()));
                 swapPieces(randomPiece, emptyPiece);
             }
         }
-        
         gamePanel.setPieces(pieces, gridSize);
     }
     
@@ -141,22 +126,18 @@ public class GameController {
         int gridSize = gameState.getDifficulty().getSize();
         int pieceWidth = gamePanel.getPieceWidth();
         int pieceHeight = gamePanel.getPieceHeight();
-        
         for (PuzzlePiece piece : pieces) {
             if (!piece.isEmpty() && 
                 x >= piece.getCurrentX() && x <= piece.getCurrentX() + pieceWidth &&
                 y >= piece.getCurrentY() && y <= piece.getCurrentY() + pieceHeight) {
-                
                 PuzzlePiece emptyPiece = findEmptyPiece(pieces);
                 if (isAdjacent(pieces, piece, emptyPiece, gridSize)) {
                     swapPieces(piece, emptyPiece);
                     gamePanel.setPieces(pieces, gridSize);
-                    
                     if (checkSolved()) {
                         gameState.setPuzzleSolved(true);
                         gameState.setGameStarted(false);
                         timerController.stopTimer();
-                        
                         int score = timerController.getSeconds();
                         JOptionPane.showMessageDialog(null, 
                             "¡Felicidades! Resolviste el puzzle en " + score + " segundos.");
@@ -182,16 +163,14 @@ public class GameController {
         int emptyIndex = pieces.indexOf(emptyPiece);
         int emptyRow = emptyIndex / gridSize;
         int emptyCol = emptyIndex % gridSize;
-        
-        // Arriba
+        // up
         if (emptyRow > 0) adjacent.add(pieces.get((emptyRow - 1) * gridSize + emptyCol));
-        // Abajo
+        // down
         if (emptyRow < gridSize - 1) adjacent.add(pieces.get((emptyRow + 1) * gridSize + emptyCol));
-        // Izquierda
+        // letf
         if (emptyCol > 0) adjacent.add(pieces.get(emptyRow * gridSize + (emptyCol - 1)));
-        // Derecha
+        // right
         if (emptyCol < gridSize - 1) adjacent.add(pieces.get(emptyRow * gridSize + (emptyCol + 1)));
-        
         return adjacent;
     }
     
@@ -202,7 +181,6 @@ public class GameController {
         int col1 = index1 % gridSize;
         int row2 = index2 / gridSize;
         int col2 = index2 % gridSize;
-        
         return (Math.abs(row1 - row2) == 1 && col1 == col2) || 
                (Math.abs(col1 - col2) == 1 && row1 == row2);
     }
@@ -214,14 +192,12 @@ public class GameController {
         p1.setCurrentY(p2.getCurrentY());
         p2.setCurrentX(tempX);
         p2.setCurrentY(tempY);
-        
         Collections.swap(gameState.getPieces(), gameState.getPieces().indexOf(p1), gameState.getPieces().indexOf(p2));
     }
     
     private boolean checkSolved() {
         List<PuzzlePiece> pieces = gameState.getPieces();
         List<PuzzlePiece> solvedPieces = gameState.getSolvedPieces();
-        
         for (int i = 0; i < pieces.size(); i++) {
             if (pieces.get(i).getOriginalPosition() != solvedPieces.get(i).getOriginalPosition()) {
                 return false;

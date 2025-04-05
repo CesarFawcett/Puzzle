@@ -5,7 +5,6 @@ public enum Difficulty {
     MEDIUM(6, "6x6"),
     HARD(8, "8x8"),
     EXPERT(16, "16x16");
-    
     private final int size;
     private final String label;
     
@@ -17,7 +16,6 @@ public enum Difficulty {
     public int getSize() {
         return size;
     }
-    
     @Override
     public String toString() {
         return label;
